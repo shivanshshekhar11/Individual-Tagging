@@ -43,13 +43,13 @@ def markAttend(name):
             dtStr = now.strftime('%H:%M:%S')
             f.writelines(f'\n{name},{dtStr}')'''
 
-def markPresence(index):
+def markPresence(record):
     with open('dump.csv', 'a') as f:
-        now = datetime.now()
-        dtStr = now.strftime('%H:%M:%S')
-        f.writelines(f'\nperson{index},{dtStr}')
+        line = ','.join(record)
+        f.writelines(f'\n{line}')
 
 encodeKnown = []
+presenceList = []
 
 cap = cv2.VideoCapture(0)
 
@@ -71,7 +71,7 @@ while True:
         matchIndex = np.argmin(faceDis)
 
         if matches[matchIndex]:
-            print('in match condition')
+            #print('in match condition')
             name = f'person {matchIndex}'
             y1,x2,y2,x1 = faceLoc
             #x1,x2,y1,y2 = x1*4,x2*4,y1*4,y2*4
@@ -79,19 +79,24 @@ while True:
             cv2.rectangle(img,(x1,y2-35),(x2,y2),(0,0,255),cv2.FILLED)
             cv2.putText(img,name,(x1+6,y2-6),cv2.FONT_HERSHEY_TRIPLEX,1,(255,255,255),2)
 
-            markPresence(matchIndex)
+            now = datetime.now()
+            dtStr = now.strftime('%H:%M:%S')
+            markPresence([name,dtStr])
+
         else:
-            print('New Person')
+            #print('New Person')
+            name = f'person {len(encodeKnown)}'
             encodeKnown.append(encodeFace)
 
-            name = f'person {len(encodeKnown)}'
             y1, x2, y2, x1 = faceLoc
             #x1, x2, y1, y2 = x1 * 4, x2 * 4, y1 * 4, y2 * 4
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 0, 255), cv2.FILLED)
             cv2.putText(img, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_TRIPLEX, 1, (255, 255, 255), 2)
 
-            markPresence(len(encodeKnown))
+            now = datetime.now()
+            dtStr = now.strftime('%H:%M:%S')
+            markPresence([name,dtStr])
 
     cv2.imshow('webcam',img)
     cv2.waitKey(1)
