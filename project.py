@@ -51,7 +51,7 @@ def markPresence(record):
 encodeKnown = []
 presenceList = []
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('./imgs/vid-02.mp4')
 
 while True:
     success, img = cap.read()
